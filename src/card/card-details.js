@@ -1,5 +1,5 @@
-import React from "react";
-import CardComment from "./card-comment";
+import React, { Suspense } from "react";
+const CardComment = React.lazy(() => import("./card-comment"));
 
 class CardDetails extends React.Component {
     constructor(props) {
@@ -19,12 +19,14 @@ class CardDetails extends React.Component {
                         <p>{post.body}</p>
                     </div>
                 </div>
-                <div className="comments">
-                    <h4><b>Comments</b></h4>
-                    {
-                        this.state.comments && this.state.comments.map(comment => <CardComment comment={comment} key={comment.id}/>)
-                    }
-                </div>
+                <Suspense fallback={<div>Loading...</div>}>
+                    <div className="comments">
+                        <h4><b>Comments</b></h4>
+                        {
+                            this.state.comments && this.state.comments.map(comment => <CardComment comment={comment} key={comment.id}/>)
+                        }
+                    </div>
+                </Suspense>
             </>
         );
     }
