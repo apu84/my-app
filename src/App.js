@@ -11,7 +11,7 @@ class App extends React.Component {
         <div className="App">
           <Router>
             <Navbar/>
-            <div className="app-wrapper">
+            <div className="flex-container">
               <Switch>
                 <Route exact path="/" component={Home}/>
                 <Route path="/new-post" component={NewPost}/>

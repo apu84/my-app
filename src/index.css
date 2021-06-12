@@ -12,15 +12,6 @@ code {
     monospace;
 }
 
-.App {
-    display: flex;
-    flex-direction: column;
-}
-
-.app-wrapper {
-    display: flex;
-    flex-direction: row;
-}
 
 .posts {
     display: flex;
@@ -267,4 +258,54 @@ a {
     .submenu-active {
         border-radius: 0;
     }
+}
+
+.flex-container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+}
+
+.new-post {
+    flex: .7 0;
+    display: flex;
+    flex-flow: column nowrap;
+ }
+
+label {
+    margin: 0 0 5px 0;
+}
+.field {
+    margin: 0 0 15px 0;
+}
+
+.rte {
+    border: 1px solid gray;
+    min-height: 15em;
+}
+
+.rte-toolbar {
+    margin-bottom: 5px;
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.rte-toolbar-button {
+    flex: .05;
+    margin-right: 5px;
+}
+
+.action-bar {
+    margin: 10px 0 10px 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.action-bar button.save {
+    order: 2;
+}
+
+.action-bar button.reset {
+    margin-right: 10px;
+    order: 1;
 }
