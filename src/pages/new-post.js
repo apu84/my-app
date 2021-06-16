@@ -6,6 +6,8 @@ import {selectPosts, newPost, selectStatus} from './post-slice';
 import NProgress from 'nprogress/nprogress';
 
 export default function NewPost() {
+  const [key, setKey] = useState(0);
+
   NProgress.configure({
     showSpinner: false,
     trickleSpeed: 50
@@ -31,13 +33,16 @@ export default function NewPost() {
     {
       name: 'body',
       label: 'Body',
-      type: 'text/xhtml'
+      type: 'text/xhtml',
+      defaultValue: '<br/>'
     }
   ]);
 
   const [localField, setLocalFieldValue] = useState(fieldEditor.initialize());
+
   const resetForm = () => {
     fieldEditor.getFields().forEach(f => setFieldValue(f.name, ''));
+    setKey(getRandomInt());
   };
 
   const setFieldValue = (fieldName, value) => {
@@ -57,12 +62,16 @@ export default function NewPost() {
   };
 
   if (status === 'pending') {
-    NProgress.start();
     NProgress.inc();
   } else if (status === 'fulfilled') {
     NProgress.done();
-    NProgress.remove();
   }
+
+ const getKey = fieldName => fieldName +'-'+ key;
+
+ const getPostKey = fieldName => fieldName +'-'+ getRandomInt();
+
+ const getRandomInt = (max) => Math.floor(Math.random() * (max || 1000));
 
   return (
       <div className="new-post">
@@ -70,7 +79,7 @@ export default function NewPost() {
         {
           fieldEditor && fieldEditor.getFields().map(field => (
               <Field field={field}
-                     key={field.id}
+                     key={getKey(field.name)}
                      value={localField[field.name]}
                      onChange={value => setFieldValue(field.name, value)}/>
           ))
@@ -83,8 +92,8 @@ export default function NewPost() {
         <h4>Posts</h4>
         <div>
           {
-            posts && posts.map(p => (
-                <article key={p.id}>
+            posts && posts.map((p, i) => (
+                <article key={getPostKey('article')}>
                   <strong>{p.title}</strong>
                   <p>{p.leadText}</p>
                   <div dangerouslySetInnerHTML={{__html: p.body}}/>
@@ -94,6 +103,5 @@ export default function NewPost() {
         </div>
       </div>
   );
-
 }
 
