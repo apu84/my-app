@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 
-export const newPost = createAsyncThunk('createPost/newPost', async (post) => {
+export const newPost = createAsyncThunk('post/newPost', async (post) => {
   const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
     method: 'POST',
     body: JSON.stringify(post),
@@ -16,8 +16,8 @@ const initialState = {
   status: 'idle'
 };
 
-const createPostSlice = createSlice({
-  name: 'createPost',
+const postSlice = createSlice({
+  name: 'post',
   initialState,
   reducers: {
     save: (state, action) => {
@@ -25,16 +25,22 @@ const createPostSlice = createSlice({
     }
   },
   extraReducers: {
+    [newPost.pending]: (state, action) => {
+      state.status = 'pending';
+    },
     [newPost.fulfilled]: (state, action) => {
       state.posts.push(action.payload);
+      state.status = 'fulfilled';
     }
   }
 });
 
 //reducer
-export default createPostSlice.reducer;
+export default postSlice.reducer;
 
 //actions
-export const { save } = createPostSlice.actions;
+export const { save } = postSlice.actions;
 
-export const selectCreatePost = state => state.createPost.posts;
+export const selectPosts = state => state.post.posts;
+export const selectStatus = state => state.post.status;
+

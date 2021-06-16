@@ -21,7 +21,7 @@ export default class FieldEditor {
 
   initialize() {
     return this._fields.reduce((map, field) => {
-      map[field.name] = field.value;
+      map[field.name] = field.defaultValue || '';
       return map;
     }, {});
   }

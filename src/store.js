@@ -1,8 +1,8 @@
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
-import createPostReducer from './pages/new-post-slice'
+import postReducer from './pages/post-slice'
 
 export default configureStore({
   reducer: combineReducers({
-    createPost: createPostReducer
+    post: postReducer
   })
 })

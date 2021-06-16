@@ -2,18 +2,27 @@ import React, {useState} from "react";
 import FieldEditor from "../components/field-editor";
 import Field from "../components/field";
 import {useDispatch, useSelector} from "react-redux";
-import { selectCreatePost, newPost} from './new-post-slice';
+import {selectPosts, newPost, selectStatus} from './post-slice';
+import NProgress from 'nprogress/nprogress';
 
 export default function NewPost() {
-  const posts = useSelector(selectCreatePost);
+  NProgress.configure({
+    showSpinner: false,
+    trickleSpeed: 50
+  });
+
+  const posts = useSelector(selectPosts);
+  const status = useSelector(selectStatus);
+
   const dispatch = useDispatch();
 
   const fieldEditor = new FieldEditor();
-  fieldEditor.addFields([{
-    name: 'title',
-    label: 'Title',
-    type: 'text/plain'
-  },
+  fieldEditor.addFields([
+    {
+      name: 'title',
+      label: 'Title',
+      type: 'text/plain'
+    },
     {
       name: 'leadText',
       label: 'Leadtext',
@@ -23,9 +32,10 @@ export default function NewPost() {
       name: 'body',
       label: 'Body',
       type: 'text/xhtml'
-    }]);
+    }
+  ]);
 
-  const [localField, setLocalFieldValue] = useState({});
+  const [localField, setLocalFieldValue] = useState(fieldEditor.initialize());
   const resetForm = () => {
     fieldEditor.getFields().forEach(f => setFieldValue(f.name, ''));
   };
@@ -45,6 +55,14 @@ export default function NewPost() {
     dispatch(newPost(localField));
     resetForm();
   };
+
+  if (status === 'pending') {
+    NProgress.start();
+    NProgress.inc();
+  } else if (status === 'fulfilled') {
+    NProgress.done();
+    NProgress.remove();
+  }
 
   return (
       <div className="new-post">
@@ -66,7 +84,7 @@ export default function NewPost() {
         <div>
           {
             posts && posts.map(p => (
-                <article>
+                <article key={p.id}>
                   <strong>{p.title}</strong>
                   <p>{p.leadText}</p>
                   <div dangerouslySetInnerHTML={{__html: p.body}}/>
