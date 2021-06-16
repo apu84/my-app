@@ -1,66 +1,81 @@
-import React from "react";
+import React, {useState} from "react";
 import FieldEditor from "../components/field-editor";
 import Field from "../components/field";
+import {useDispatch, useSelector} from "react-redux";
+import { selectCreatePost, newPost} from './new-post-slice';
 
-export default class NewPost extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
+export default function NewPost() {
+  const posts = useSelector(selectCreatePost);
+  const dispatch = useDispatch();
 
-  componentDidMount() {
-    this.fieldEditor = new FieldEditor();
-    this.fieldEditor.addFields([{
-      name: 'title',
-      value: '',
-      label: 'Title',
+  const fieldEditor = new FieldEditor();
+  fieldEditor.addFields([{
+    name: 'title',
+    label: 'Title',
+    type: 'text/plain'
+  },
+    {
+      name: 'leadText',
+      label: 'Leadtext',
       type: 'text/plain'
     },
-      {
-        name: 'leadtext',
-        value: '',
-        label: 'Leadtext',
-        type: 'text/plain'
-      },
-      {
-        name: 'body',
-        value: '',
-        label: 'Body',
-        type: 'text/xhtml'
-      }]);
+    {
+      name: 'body',
+      label: 'Body',
+      type: 'text/xhtml'
+    }]);
 
-    this.setState(this.fieldEditor.initialize());
-  }
+  const [localField, setLocalFieldValue] = useState({});
+  const resetForm = () => {
+    fieldEditor.getFields().forEach(f => setFieldValue(f.name, ''));
+  };
 
-  save() {}
+  const setFieldValue = (fieldName, value) => {
+    const field = {};
+    field[fieldName] = value
 
-  reset() {
-    this.setState(this.fieldEditor.initialize());
-  }
+    setLocalFieldValue(prevState => {
+      return {
+        ...prevState, ...field
+      }
+    });
+  };
 
-  render() {
-    return (
-        <div className="new-post">
-          <h4>New post</h4>
+  const saveForm = () => {
+    dispatch(newPost(localField));
+    resetForm();
+  };
+
+  return (
+      <div className="new-post">
+        <h4>New post</h4>
+        {
+          fieldEditor && fieldEditor.getFields().map(field => (
+              <Field field={field}
+                     key={field.id}
+                     value={localField[field.name]}
+                     onChange={value => setFieldValue(field.name, value)}/>
+          ))
+        }
+        <div className="action-bar">
+          <button className="save" onClick={() => saveForm()}>Save</button>
+          <button className="reset" onClick={() => resetForm()}>Reset</button>
+        </div>
+
+        <h4>Posts</h4>
+        <div>
           {
-
-            this.fieldEditor && this.fieldEditor.getFields().map(field => (
-                <>
-                  <Field field={field}
-                         key={field.id}
-                         onChange={(fieldState) => this.setState(fieldState)}
-                         fieldState={this.state[field.name]}
-                         />
-                  {/*<span style={{border: "1px solid red"}}>{this.state[field.name].value}</span>*/}
-                </>
+            posts && posts.map(p => (
+                <article>
+                  <strong>{p.title}</strong>
+                  <p>{p.leadText}</p>
+                  <div dangerouslySetInnerHTML={{__html: p.body}}/>
+                </article>
             ))
           }
-          <div className="action-bar">
-            <button className="save" onClick={() => this.save()}>Save</button>
-            <button className="reset" onClick={() => this.reset()}>Reset</button>
-          </div>
         </div>
-    );
-  }
+      </div>
+  );
+
 }
 
