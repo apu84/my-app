@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import FieldEditor from "../components/field-editor";
 import Field from "../components/field";
 import {useDispatch, useSelector} from "react-redux";
-import {selectPosts, newPost, selectStatus} from './post-slice';
+import {selectPosts, newPost, selectStatus, editPost} from './post-slice';
 import NProgress from 'nprogress/nprogress';
 
 export default function NewPost() {
@@ -20,7 +20,7 @@ export default function NewPost() {
 
   const fieldEditor = new FieldEditor();
   fieldEditor.addFields([
-    {
+   /* {
       name: 'title',
       label: 'Title',
       type: 'text/plain'
@@ -35,6 +35,11 @@ export default function NewPost() {
       label: 'Body',
       type: 'text/xhtml',
       defaultValue: '<br/>'
+    }*/
+    {
+      type: 'file',
+      name: 'file',
+      label: 'Upload'
     }
   ]);
 
@@ -57,7 +62,7 @@ export default function NewPost() {
   };
 
   const saveForm = () => {
-    dispatch(newPost(localField));
+    dispatch(!localField.id ? newPost(localField) : editPost(localField));
     resetForm();
   };
 
@@ -72,6 +77,11 @@ export default function NewPost() {
  const getPostKey = fieldName => fieldName +'-'+ getRandomInt();
 
  const getRandomInt = (max) => Math.floor(Math.random() * (max || 1000));
+
+ const editPostForm = post => {
+  setLocalFieldValue(post);
+  setKey(getRandomInt());
+ };
 
   return (
       <div className="new-post">
@@ -92,8 +102,9 @@ export default function NewPost() {
         <h4>Posts</h4>
         <div>
           {
-            posts && posts.map((p, i) => (
+            posts && posts.map(p => (
                 <article key={getPostKey('article')}>
+                  <button onClick={ () => editPostForm(p)}>Edit</button>
                   <strong>{p.title}</strong>
                   <p>{p.leadText}</p>
                   <div dangerouslySetInnerHTML={{__html: p.body}}/>

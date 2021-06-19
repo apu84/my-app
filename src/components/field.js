@@ -1,6 +1,7 @@
 import React from "react";
 import TextField from "./text-field";
 import RTEField from "./rte-field";
+import FileField from "./file-field";
 
 export default function Field(props) {
 
@@ -22,6 +23,12 @@ export default function Field(props) {
                   label={props.field.label}
                   onChange={(v) => props.onChange(v)}
                   key={props.field.id}/>
+    );
+  }
+
+  if(props.field.type === 'file') {
+    return (
+      <FileField />
     );
   }
 

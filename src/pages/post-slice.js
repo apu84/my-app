@@ -9,7 +9,18 @@ export const newPost = createAsyncThunk('post/newPost', async (post) => {
     },
   });
   return response.json();
-})
+});
+
+export const editPost = createAsyncThunk('post/editPost', async (post) => {
+  const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${post.id}`, {
+    method: 'PUT',
+    body: JSON.stringify(post),
+    headers: {
+      'Content-type': 'application/json; charset=UTF-8',
+    },
+  });
+  return response.json();
+});
 
 const initialState = {
   posts: [],
@@ -30,6 +41,13 @@ const postSlice = createSlice({
     },
     [newPost.fulfilled]: (state, action) => {
       state.posts.push(action.payload);
+      state.status = 'fulfilled';
+    },
+    [editPost.pending]: (state, action) => {
+      state.status = 'pending';
+    },
+    [editPost.fulfilled]: (state, action) => {
+      state.posts = state.posts.map(post => post.id === action.id ? action.payload: post);
       state.status = 'fulfilled';
     }
   }
